@@ -212,27 +212,6 @@ function Cart() {
               </>
                 ))}
                 
-                
-{/*                
-                <Product>
-                  <ProductDetails>
-                    <Image src="https://i.pinimg.com/originals/2d/af/f8/2daff8e0823e51dd752704a47d5b795c.png"/>
-                    <Details>
-                      <ProductName><b>Product: </b>Silver Bracelet</ProductName>
-                      <ProductId><b>ID: </b>123456789</ProductId>
-                      <ProductColor color="silver"/>
-                      <ProductSize><b>size: </b>13"</ProductSize>
-                    </Details>
-                  </ProductDetails>
-                  <PriceDetails>
-                    <ProductAmountContainer>
-                      <Add/>
-                        <ProductAmount>2</ProductAmount>
-                      <Remove/>
-                    </ProductAmountContainer>
-                    <ProductPrice>N 7,000</ProductPrice>
-                  </PriceDetails>
-                </Product> */}
               </Info>
               <Summary>
                 <SummaryTitle>Order Summary</SummaryTitle>
@@ -250,7 +229,7 @@ function Cart() {
                 </SummaryItem>
                 <SummaryItem type="total">
                   <SummaryItemTitle >Total</SummaryItemTitle>
-                  <SummaryItemPrice>N {cart.total}</SummaryItemPrice>
+                  <SummaryItemPrice>N {cart.total+1900}</SummaryItemPrice>
                 </SummaryItem>
                 <StripeCheckout
                   name="Lordfaith Store"
