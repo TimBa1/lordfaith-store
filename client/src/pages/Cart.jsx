@@ -6,13 +6,13 @@ import { Announcement } from '../components/Announcement'
 import { Footer } from '../components/Footer'
 import Navbar from '../components/Navbar'
 import { mobile } from '../responsive'
-import StripeCheckout from 'react-stripe-checkout'
 import { userRequest } from '../requestMethods';
 import { Link, useHistory } from 'react-router-dom'
+import { usePaystackPayment } from 'react-paystack';
 
-const KEY = "pk_test_51KmOxbB3yNlnVSxfkmgAyMSfCbq8S06P1rRN1u1f4UjFrUP8V9FHlMnozt49vHmSUs4ANtIjcjydbdQfzrHqaya900FWY6TPcD";
-
+ 
 const Container = styled.div`
+
 
 `
 const Wrapper = styled.div`
@@ -146,30 +146,46 @@ const Button = styled.button`
   color:white;
   font-weight:600;
   cursor:pointer;
+  `
 
-`
+
 function Cart() {
   const cart = useSelector(state => state.cart);
-  const [stripeToken, setStripeToken] = useState(null)
-  const history = useHistory()
+  const totalPackage = `${cart.total+1900}`
 
-  const onToken = (token) => {
-    setStripeToken(token)
+  const user = useSelector((state) => state.user.currentUser);
+
+  const config = {
+    reference: (new Date()).getTime().toString(),
+    name: `${user.name}`,
+    email: `${user.email}`,
+    amount: `${totalPackage*100}`,
+    publicKey: 'pk_test_76528916a56d96ad8711e392ac873b8278530ba2',
+    
   }
-  
-  useEffect(() => {
-    const makeRequest = async () => {
-      try {
-        const res = await userRequest.post("/checkout/payment", {
-          tokenId: stripeToken.id,
-          amount: 500,
-        });
-          history.push("/success",{data:res.data})
-      } catch { }
-    };
-  stripeToken && makeRequest();
-},[stripeToken,cart.total,history])
+  const onSuccess = (reference) => {
+    
+    alert(reference.trxref.status);
+};
 
+const onClose = () => {
+    // implementation for  whatever you want to do when the Paystack dialog closed.
+    console.log('closed')
+}
+
+
+const PaystackHookExample = () => {
+  const initializePayment = usePaystackPayment(config);
+  return (
+    <div>
+        <Button onClick={() => {
+            initializePayment(onSuccess, onClose)
+        }}>CHECKOUT</Button>
+    </div>
+  );
+};
+
+  
   return (
       <Container>
           <Navbar />
@@ -189,7 +205,7 @@ function Cart() {
             </Top>
             <Bottom>
               <Info>
-              {cart.products.map(product =>(<><Product>
+              {cart.products.map(product =>(<div key={product}><Product >
               <ProductDetails>
                   <Image src={product.img}/>
                     <Details>
@@ -209,7 +225,7 @@ function Cart() {
                   </PriceDetails>
                 </Product> 
                  <Hr/>
-              </>
+              </div>
                 ))}
                 
               </Info>
@@ -229,20 +245,13 @@ function Cart() {
                 </SummaryItem>
                 <SummaryItem type="total">
                   <SummaryItemTitle >Total</SummaryItemTitle>
-                  <SummaryItemPrice>N {cart.total+1900}</SummaryItemPrice>
+                  <SummaryItemPrice>N {totalPackage}</SummaryItemPrice>
                 </SummaryItem>
-                <StripeCheckout
-                  name="Lordfaith Store"
-                  image=""
-                  billingAddress
-                  shippingAddress
-                  description={`your total is N ${cart.total}`} 
-                  amount={cart.total*100}
-                  token={onToken}
-                  stripeKey={KEY}
-                >
-                  <Button>CHECKOUT</Button>
-                </StripeCheckout>
+
+
+                 <PaystackHookExample/>
+
+            
               </Summary>
             </Bottom>
           </Wrapper>
